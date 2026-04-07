@@ -37,8 +37,15 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+const { PrismaClient } = require('@prisma/client');
+const prismaHealth = new PrismaClient();
+app.get('/api/health', async (_req, res) => {
+  try {
+    await prismaHealth.$queryRaw`SELECT 1`;
+    res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString() });
+  } catch (err) {
+    res.status(500).json({ status: 'error', database: 'disconnected', error: err.message, timestamp: new Date().toISOString() });
+  }
 });
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
