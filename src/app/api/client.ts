@@ -1,4 +1,8 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Ensure the URL ends with /api if it's pointing to our backend
+export const API_URL = rawApiUrl.endsWith('/api') || rawApiUrl.endsWith('/api/') 
+    ? rawApiUrl.replace(/\/$/, '') 
+    : `${rawApiUrl.replace(/\/$/, '')}/api`;
 
 function getAuthHeader(): Record<string, string> {
     const token = localStorage.getItem('token');
