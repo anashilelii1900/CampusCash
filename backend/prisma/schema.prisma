@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int           @id @default(autoincrement())
+  email              String        @unique
+  password           String
+  role               String
+  name               String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  university         String?
+  major              String?
+  skills             String?
+  companyName        String?
+  companyDescription String?
+  website            String?
+  resumeUrl          String?
+  avatarUrl          String?
+  portfolioUrl       String?
+  applications       Application[] @relation("Applicant")
+  jobsPosted         Job[]         @relation("JobsPosted")
+  receivedMessages   Message[]     @relation("Receiver")
+  sentMessages       Message[]     @relation("Sender")
+  payments           Payment[]     @relation("EmployerPayments")
+  reviewsReceived    Review[]      @relation("ReviewsReceived")
+  reviewsGiven       Review[]      @relation("ReviewsGiven")
+}
+
+model Job {
+  id               Int           @id @default(autoincrement())
+  title            String
+  description      String
+  company          String
+  location         String
+  salary           String
+  type             String
+  requirements     String
+  responsibilities String
+  status           String        @default("active")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  employerId       Int
+  applications     Application[]
+  employer         User          @relation("JobsPosted", fields: [employerId], references: [id])
+  reviews          Review[]
+}
+
+model Application {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobId     Int
+  studentId Int
+  job       Job      @relation(fields: [jobId], references: [id])
+  student   User     @relation("Applicant", fields: [studentId], references: [id])
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  content    String?
+  fileUrl    String?
+  fileType   String?
+  createdAt  DateTime @default(now())
+  senderId   Int
+  receiverId Int
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  comment    String
+  createdAt  DateTime @default(now())
+  reviewerId Int
+  reviewedId Int
+  jobId      Int?
+  job        Job?     @relation(fields: [jobId], references: [id])
+  reviewed   User     @relation("ReviewsReceived", fields: [reviewedId], references: [id])
+  reviewer   User     @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+
+  @@index([reviewedId, createdAt])
+  @@index([reviewerId, createdAt])
+}
+
+model Payment {
+  id          Int      @id @default(autoincrement())
+  amount      Int
+  currency    String   @default("TND")
+  status      String   @default("paid")
+  description String?
+  createdAt   DateTime @default(now())
+  employerId  Int
+  employer    User     @relation("EmployerPayments", fields: [employerId], references: [id])
+
+  @@index([employerId, createdAt])
+}

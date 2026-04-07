@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Black arch -->
+  <path d="M10 160 Q100 30 190 160" stroke="#111111" stroke-width="28" fill="none" stroke-linecap="round"/>
+
+  <!-- Graduate body (gold) -->
+  <!-- Torso -->
+  <ellipse cx="100" cy="108" rx="16" ry="20" fill="#C9941A"/>
+  <!-- Red tie -->
+  <polygon points="100,96 96,114 100,120 104,114" fill="#CC2222"/>
+  <!-- Left arm raised up-right -->
+  <path d="M100 100 Q130 80 148 68" stroke="#C9941A" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <!-- Right arm down-left -->
+  <path d="M100 104 Q74 112 60 120" stroke="#C9941A" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <!-- Head -->
+  <circle cx="100" cy="76" r="14" fill="#C9941A"/>
+  <!-- Graduation cap board -->
+  <rect x="82" y="60" width="36" height="6" rx="2" fill="#111111"/>
+  <!-- Cap top -->
+  <rect x="88" y="52" width="24" height="10" rx="3" fill="#111111"/>
+  <!-- Tassel -->
+  <line x1="118" y1="57" x2="126" y2="70" stroke="#C9941A" stroke-width="2.5"/>
+  <circle cx="126" cy="72" r="3" fill="#C9941A"/>
+</svg>

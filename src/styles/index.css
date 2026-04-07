@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@import 'tailwindcss';
+
+@theme {
+  /* Gold palette */
+  --color-gold-50:   #FDF9EC;
+  --color-gold-100:  #FAF0C4;
+  --color-gold-200:  #F5DFA0;
+  --color-gold-300:  #ECC95A;
+  --color-gold-400:  #D4A520;
+  --color-gold-500:  #C9941A;
+  --color-gold-600:  #A87500;
+  --color-gold-700:  #7A5500;
+}
+
+:root {
+  --background:    #FFFFFF;
+  --foreground:    #111111;
+  --card:          #FFFFFF;
+  --border:        #E8E0C8;
+  --muted:         #6B5B35;
+  --primary:       #C9941A;
+  --primary-hover: #A87500;
+  --primary-light: #FDF9EC;
+}
+
+* {
+  scroll-behavior: smooth;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+input, textarea, select {
+  color: var(--foreground);
+}
+
+.font-inter { font-family: 'Inter', sans-serif; }
+
+/* Premium glass */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(201, 148, 26, 0.18);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(201, 148, 26, 0.4); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #C9941A; }
