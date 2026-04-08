@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "build": "prisma generate && prisma db push --accept-data-loss && node prisma/seed.prod.js",
+    "build": "prisma generate && prisma db push --accept-data-loss",
     "dev": "node server.js",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",

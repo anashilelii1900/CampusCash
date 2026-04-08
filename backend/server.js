@@ -105,4 +105,51 @@ server.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`   WebSockets enabled`);
+
+  // Auto-seed on startup (creates admin + demo data if they don't exist)
+  (async () => {
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const bcrypt = require('bcrypt');
+      const seedPrisma = new PrismaClient();
+
+      const adminEmail = 'admin@campuscash.tn';
+      const existing = await seedPrisma.user.findUnique({ where: { email: adminEmail } });
+      if (!existing) {
+        const adminHash = await bcrypt.hash('Admin@2026!', 10);
+        await seedPrisma.user.create({ data: { name: 'Admin', email: adminEmail, password: adminHash, role: 'admin' } });
+        console.log('✅ Admin account seeded: admin@campuscash.tn / Admin@2026!');
+
+        // Demo student
+        const stHash = await bcrypt.hash('student123', 10);
+        const student = await seedPrisma.user.create({ data: { name: 'Yasmine Guedri', email: 'student@example.com', password: stHash, role: 'student', university: 'INSAT', major: 'Software Engineering', skills: 'React, Node.js, Python' } });
+
+        // Demo employer
+        const emHash = await bcrypt.hash('employer123', 10);
+        const employer = await seedPrisma.user.create({ data: { name: 'TechFlow Solutions', email: 'employer@example.com', password: emHash, role: 'employer', companyName: 'TechFlow Solutions', companyDescription: 'Modern SaaS for enterprise.', website: 'https://techflow.example.com' } });
+
+        // Sample jobs
+        const sampleJobs = [
+          { title: 'Frontend Developer Intern', description: 'Build UI components with React.', type: 'Part-time', requirements: 'React, HTML, CSS', salary: '500 TND/month', location: 'Remote', responsibilities: 'UI development tasks.' },
+          { title: 'Social Media Manager', description: 'Manage Instagram and LinkedIn.', type: 'Freelance', requirements: 'Canva, Social Media', salary: '300 TND/month', location: 'Remote', responsibilities: 'Content creation and scheduling.' },
+          { title: 'Data Analyst Intern', description: 'Analyze user data with SQL and Python.', type: 'Part-time', requirements: 'SQL, Python, Pandas', salary: '600 TND/month', location: 'Tunis (Hybrid)', responsibilities: 'Data analysis and reporting.' },
+          { title: 'UX/UI Designer', description: 'Redesign dashboard and user flows.', type: 'Freelance', requirements: 'Figma, Prototyping', salary: '800 TND/project', location: 'Remote', responsibilities: 'Design and prototyping.' },
+          { title: 'Backend Node.js Developer', description: 'Build scalable REST APIs.', type: 'Part-time', requirements: 'Node.js, Express, PostgreSQL', salary: '700 TND/month', location: 'Tunis (Hybrid)', responsibilities: 'API development.' },
+        ];
+        for (const job of sampleJobs) {
+          await seedPrisma.job.create({ data: { ...job, company: 'TechFlow Solutions', employerId: employer.id, status: 'active' } });
+        }
+        const jobs = await seedPrisma.job.findMany({ take: 3 });
+        for (let i = 0; i < jobs.length; i++) {
+          await seedPrisma.application.create({ data: { jobId: jobs[i].id, studentId: student.id, status: ['pending','accepted','rejected'][i] } });
+        }
+        console.log('✅ Demo data seeded successfully!');
+      } else {
+        console.log('ℹ️  Database already seeded, skipping.');
+      }
+      await seedPrisma.$disconnect();
+    } catch (e) {
+      console.error('⚠️  Seed error (non-fatal):', e.message);
+    }
+  })();
 });
