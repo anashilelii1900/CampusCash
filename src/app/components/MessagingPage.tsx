@@ -1,6 +1,6 @@
-﻿import { Navbar } from './Navbar';
+import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, X, User } from 'lucide-react';
+import { Search, Send, Paperclip, MoreVertical, Plus, X, User } from 'lucide-react';
 import type { NavigateOptions, PageType, UserRole } from '../App';
 import { api } from '../api/client';
 import { toast } from 'sonner';
@@ -35,8 +35,11 @@ export function MessagingPage({ onNavigate, userRole, onLogout }: MessagingPageP
     fetchMe();
     fetchConversations();
 
-    // Initialize Socket
-    const socket = io('http://localhost:5000');
+    // Initialize Socket to production or local backend
+    const backendUrl = (import.meta as any).env.VITE_API_URL
+      ? (import.meta as any).env.VITE_API_URL.replace('/api', '')
+      : 'http://localhost:5000';
+    const socket = io(backendUrl);
     socketRef.current = socket;
 
     socket.on('connect', () => {
@@ -149,7 +152,10 @@ export function MessagingPage({ onNavigate, userRole, onLogout }: MessagingPageP
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:5000/api/messages/upload', {
+      const backendBase = (import.meta as any).env.VITE_API_URL
+        ? (import.meta as any).env.VITE_API_URL.replace('/api', '')
+        : 'http://localhost:5000';
+      const response = await fetch(`${backendBase}/api/messages/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -211,7 +217,7 @@ export function MessagingPage({ onNavigate, userRole, onLogout }: MessagingPageP
 
   return (
     <div className="min-h-screen bg-[#FFFFFF] dark:bg-[#0A0A0A] flex flex-col transition-colors duration-300">
-      <Navbar onNavigate={onNavigate} userRole={userRole} onLogout={onLogout} activePage="messages" />
+      <Navbar onNavigate={onNavigate} userRole={userRole} onLogout={onLogout} activePage="messaging" />
 
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8 w-full flex flex-col">
         <div className="mb-8 flex justify-between items-end">
@@ -297,12 +303,6 @@ export function MessagingPage({ onNavigate, userRole, onLogout }: MessagingPageP
                 </div>
                 <div className="flex items-center space-x-2">
                   <button className="p-2 hover:bg-[#F5F3EF] dark:hover:bg-white/5 rounded-lg transition-colors">
-                    <Phone size={20} className="text-[#777777] dark:text-gray-400" />
-                  </button>
-                  <button className="p-2 hover:bg-[#F5F3EF] dark:hover:bg-white/5 rounded-lg transition-colors">
-                    <Video size={20} className="text-[#777777] dark:text-gray-400" />
-                  </button>
-                  <button className="p-2 hover:bg-[#F5F3EF] dark:hover:bg-white/5 rounded-lg transition-colors">
                     <MoreVertical size={20} className="text-[#777777] dark:text-gray-400" />
                   </button>
                 </div>
@@ -326,28 +326,33 @@ export function MessagingPage({ onNavigate, userRole, onLogout }: MessagingPageP
                         >
                           {message.fileUrl && (
                             <div className="mb-2 overflow-hidden rounded-lg">
-                              {message.fileType === 'image' ? (
-                                <img 
-                                  src={`http://localhost:5000${message.fileUrl}`} 
-                                  alt="Shared" 
-                                  className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                                  onClick={() => window.open(`http://localhost:5000${message.fileUrl}`, '_blank')}
-                                />
-                              ) : (
-                                <a 
-                                  href={`http://localhost:5000${message.fileUrl}`} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className={`flex items-center space-x-2 p-3 rounded-lg border ${
-                                    isMe ? 'bg-white/10 border-white/20' : 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10'
-                                  }`}
-                                >
-                                  <Paperclip size={18} />
-                                  <span className="text-sm font-medium truncate max-w-[150px]">
-                                    {message.fileUrl.split('/').pop()}
-                                  </span>
-                                </a>
-                              )}
+                              {(() => {
+                                const baseUrl = (import.meta as any).env.VITE_API_URL
+                                  ? (import.meta as any).env.VITE_API_URL.replace('/api', '')
+                                  : 'http://localhost:5000';
+                                return message.fileType === 'image' ? (
+                                  <img
+                                    src={`${baseUrl}${message.fileUrl}`}
+                                    alt="Shared"
+                                    className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                    onClick={() => window.open(`${baseUrl}${message.fileUrl}`, '_blank')}
+                                  />
+                                ) : (
+                                  <a
+                                    href={`${baseUrl}${message.fileUrl}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`flex items-center space-x-2 p-3 rounded-lg border ${
+                                      isMe ? 'bg-white/10 border-white/20' : 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10'
+                                    }`}
+                                  >
+                                    <Paperclip size={18} />
+                                    <span className="text-sm font-medium truncate max-w-[150px]">
+                                      {message.fileUrl.split('/').pop()}
+                                    </span>
+                                  </a>
+                                );
+                              })()}
                             </div>
                           )}
                           {message.content && (

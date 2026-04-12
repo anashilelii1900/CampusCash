@@ -68,7 +68,7 @@ export function Navbar({ onNavigate, userRole, onLogout, activePage = 'home' }: 
             )}
             {userRole && (
               <>
-                <NavButton label="Dashboard" isActive={activePage === 'dashboard'} onClick={() => handleNavClick(userRole === 'student' ? 'student-dashboard' : 'employer-dashboard')} />
+                <NavButton label="Dashboard" isActive={activePage === 'student-dashboard' || activePage === 'employer-dashboard'} onClick={() => handleNavClick(userRole === 'student' ? 'student-dashboard' : 'employer-dashboard')} />
                 <NavButton label="Applications" isActive={activePage === 'applications'} onClick={() => handleNavClick('applications')} />
                 <NavButton label="Messages" isActive={activePage === 'messaging'} onClick={() => handleNavClick('messaging')} />
                 <NavButton label="Settings" isActive={activePage === 'settings'} onClick={() => handleNavClick('settings')} />
@@ -141,7 +141,7 @@ export function Navbar({ onNavigate, userRole, onLogout, activePage = 'home' }: 
                   </>
                 ) : (
                   <>
-                    <MobileNavButton label="Dashboard" isActive={activePage === 'dashboard'} onClick={() => handleNavClick(userRole === 'student' ? 'student-dashboard' : 'employer-dashboard')} />
+                    <MobileNavButton label="Dashboard" isActive={activePage === 'student-dashboard' || activePage === 'employer-dashboard'} onClick={() => handleNavClick(userRole === 'student' ? 'student-dashboard' : 'employer-dashboard')} />
                     <MobileNavButton label="Applications" isActive={activePage === 'applications'} onClick={() => handleNavClick('applications')} />
                     <MobileNavButton label="Messages" isActive={activePage === 'messaging'} onClick={() => handleNavClick('messaging')} />
                     <MobileNavButton label="Settings" isActive={activePage === 'settings'} onClick={() => handleNavClick('settings')} />
