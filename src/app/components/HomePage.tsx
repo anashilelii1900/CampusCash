@@ -4,6 +4,8 @@ import { Users, Briefcase, Building2, Search, UserPlus, DollarSign, FileText, Ch
 import type { NavigateOptions, PageType, UserRole } from '../App';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { api } from '../api/client';
 
 interface HomePageProps {
   onNavigate: (page: PageType, options?: NavigateOptions) => void;
@@ -30,62 +32,19 @@ export function HomePage({ onNavigate, userRole, onLogout }: HomePageProps) {
     { icon: CheckCircle, title: 'Hire & Manage', description: 'Select and manage your student workforce' },
   ];
 
-  const featuredJobs = [
-    {
-      id: 1,
-      title: 'Social Media Manager',
-      company: 'TechStart Tunisia',
-      salary: '800 TND/month',
-      location: 'Tunis',
-      type: 'Part-time',
-      logo: '🚀'
-    },
-    {
-      id: 2,
-      title: 'Content Writer',
-      company: 'Digital Agency',
-      salary: '15 TND/hour',
-      location: 'Remote',
-      type: 'Freelance',
-      logo: '✍️'
-    },
-    {
-      id: 3,
-      title: 'Customer Support',
-      company: 'E-commerce Plus',
-      salary: '700 TND/month',
-      location: 'Sousse',
-      type: 'Part-time',
-      logo: '🛍️'
-    },
-    {
-      id: 4,
-      title: 'Graphic Designer',
-      company: 'Creative Studio',
-      salary: '20 TND/hour',
-      location: 'Sfax',
-      type: 'Freelance',
-      logo: '🎨'
-    },
-    {
-      id: 5,
-      title: 'Data Entry Clerk',
-      company: 'Admin Services',
-      salary: '600 TND/month',
-      location: 'Tunis',
-      type: 'Part-time',
-      logo: '📊'
-    },
-    {
-      id: 6,
-      title: 'Tutor - Mathematics',
-      company: 'Learning Center',
-      salary: '25 TND/hour',
-      location: 'Monastir',
-      type: 'Freelance',
-      logo: '📚'
-    },
-  ];
+  const [featuredJobs, setFeaturedJobs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchLatestJobs = async () => {
+      try {
+        const jobs = await api.get('/jobs');
+        setFeaturedJobs(jobs.slice(0, 6)); // Show latest 6 jobs
+      } catch (error) {
+        console.error('Failed to load featured jobs:', error);
+      }
+    };
+    fetchLatestJobs();
+  }, []);
 
   const testimonials = [
     {
@@ -370,8 +329,8 @@ export function HomePage({ onNavigate, userRole, onLogout }: HomePageProps) {
             {featuredJobs.map((job) => (
               <div key={job.id} className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 bg-[#F5F3EF] rounded-lg flex items-center justify-center text-2xl">
-                    {job.logo}
+                  <div className="w-12 h-12 bg-[#F5F3EF] rounded-lg flex items-center justify-center text-2xl font-bold uppercase text-[#C9940A]">
+                    {job.logo || (job.employer?.companyName?.[0] || job.company?.[0] || 'C')}
                   </div>
                   <span className="bg-[#C9940A]/10 text-[#C9940A] px-3 py-1 rounded-full text-xs font-semibold">
                     {job.type}
